@@ -1,0 +1,40 @@
+services:
+  fakeroute-node :
+    cap_add:
+      - NET_ADMIN
+    hostname: fakeroute-node
+    container_name: fakeroute-node
+    build:
+      context: node/
+      dockerfile: Dockerfile
+    networks:
+      test-internal:
+        ipv4_address: 173.20.0.5
+
+  fakeroute-gateway :
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    hostname: fakeroute-gateway
+    container_name: fakeroute-gateway
+    build:
+      context: gateway/
+      dockerfile: Dockerfile
+    networks:
+      test-internal:
+        ipv4_address: 173.20.0.4
+      internet:
+        ipv4_address: 173.21.0.4
+    privileged: true  # Allow to spoof
+
+networks:
+  test-internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 173.20.0.0/16
+  internet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 173.21.0.0/16
